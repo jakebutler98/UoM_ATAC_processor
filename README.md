@@ -13,7 +13,7 @@ The pipeline is designed for HPC environments (SLURM) and focuses on:
 
 
 Directory Structure
-
+-------------------
 
 .
 ├── configs/
