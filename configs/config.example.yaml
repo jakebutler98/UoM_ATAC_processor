@@ -1,0 +1,25 @@
+# Copy to config.yaml and edit paths for your environment.
+
+paths:
+  RAW_input_dir: "/mnt/.../data/raw"
+  Trimmed_dir: "/mnt/.../temp_trimming"
+  aligned_dir: "/mnt/.../output/temp_align"
+  Reads_quality_dir: "/mnt/.../output/fastqc"
+  dedup_alignments_dir: "/mnt/.../output/temp_align_dedup"
+  cleaned_alignments_dir: "/mnt/.../output/clean_alignments"
+  macs3_dir: "/mnt/.../output/macs3"
+  coverages_dir: "/mnt/.../output/coverages"
+  other_qc_dir: "/mnt/.../output/qc"
+  fastqc_untrimmed_dir: "/mnt/.../output/qc/fastqc_untrimmed"
+  fastqc_trimmed_dir: "/mnt/.../output/qc/fastqc_trimmed"
+  logs_dir: "/mnt/.../output/logs"
+
+references:
+  bowtie2_index: "/mnt/.../hg38/Bowtie2Index/genome"
+  genome_fasta: "/mnt/.../hg38/fasta/genome.fa"
+  picard: "/mnt/.../picard.jar"
+
+options:
+  threads: 8
+  blacklist_bed: null     # set to "/path/to/hg38-blacklist.v2.bed" to enable
+  atacseqqc_dir: null     # optional override; if null uses {other_qc_dir}/{sample}/ATACseqQC

@@ -1,0 +1,67 @@
+# ======================
+# User-specific configs
+# ======================
+configs/config.yaml
+
+# ======================
+# Python
+# ======================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+
+# ======================
+# Logs
+# ======================
+*.log
+*.out
+*.err
+qc_process.log
+
+# ======================
+# HPC / SLURM
+# ======================
+slurm-*.out
+slurm-*.err
+hs_err_pid*.log
+replay_pid*.log
+
+# ======================
+# ATAC-seq outputs
+# ======================
+*.bam
+*.bai
+*.bw
+*.bed
+*.narrowPeak
+*.broadPeak
+*.tsv
+*.txt
+
+# ======================
+# Figures
+# ======================
+*.png
+*.pdf
+*.svg
+
+# ======================
+# R
+# ======================
+.Rhistory
+.RData
+.Rproj.user/
+
+# ======================
+# Jupyter
+# ======================
+.ipynb_checkpoints/
+
+# ======================
+# OS junk
+# ======================
+.DS_Store
+Thumbs.db

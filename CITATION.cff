@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this ATAC-seq processing pipeline, please cite it as below."
+title: "UoM ATAC-seq Processing Pipeline"
+authors:
+  - family-names: Butler
+    given-names: Jake
+version: 0.1.0
+date-released: 2026-01-01
+repository-code: "https://github.com/jakebutler98/UoM_ATAC_processor"
+license: MIT

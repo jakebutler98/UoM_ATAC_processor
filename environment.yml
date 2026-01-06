@@ -1,0 +1,31 @@
+name: atac_pipeline
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python>=3.10,<3.12
+
+  # Core pipeline tools
+  - bowtie2
+  - samtools
+  - bedtools
+  - fastp
+  - fastqc
+  - deeptools          # bamCoverage
+  - macs3
+  - genrich
+  - multiqc
+  - picard
+
+  # Python libs used by your scripts
+  - pyyaml
+  - pandas
+  - matplotlib
+  - pybedtools
+
+  # R + Bioconductor for ATACseqQC
+  - r-base>=4.3,<4.5
+  - bioconductor-atacseqqc
+  - bioconductor-rsamtools
+  - bioconductor-genomicalignments
+  - bioconductor-txdb.hsapiens.ucsc.hg38.knowngene
