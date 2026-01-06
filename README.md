@@ -12,39 +12,41 @@ The pipeline is designed for HPC environments (SLURM) and focuses on:
 - Clean separation of code, configuration, and execution logic
 
 
-Directory Structure
--------------------
+## Directory Structure
 
-.
-|-- configs/
-|   |-- config.example.yaml      # Example configuration (commit to git)
-|   `-- config.yaml              # User-specific config (DO NOT COMMIT)
-|
-|-- docs/
-|   `-- (future documentation, figures, notes)
-|
-|-- environment.yml              # Conda environment specification
-|
-|-- main/
-|   |-- run_atac_SLURM.sh        # SLURM submission script
-|   `-- sample.example.txt       # Example sample list
-|
-|-- r/
-|   `-- ATACseqQC_for_pipeline.r # ATACseqQC R script
-|
-`-- src/
-    |-- main_ATAC.py             # Pipeline entry point
-    |-- configuration.py         # Config loader (YAML + defaults)
-    `-- steps/
-        |-- align.py
-        |-- trimming.py
-        |-- fastqc.py
-        |-- coverage.py
-        |-- macs3.py
-        |-- qc.py
-        |-- ATACseqQC.py
-        |-- multiqc.py
-        `-- helpers.py
+The repository is organised as follows:
+
+    .
+        configs/
+            config.example.yaml
+            config.yaml
+
+        docs/
+
+        environment.yml
+
+        main/
+            run_atac_SLURM.sh
+            sample.example.txt
+
+        r/
+            ATACseqQC_for_pipeline.r
+
+        src/
+            main_ATAC.py
+            configuration.py
+            steps/
+                align.py
+                trimming.py
+                fastqc.py
+                coverage.py
+                macs3.py
+                qc.py
+                ATACseqQC.py
+                multiqc.py
+                helpers.py
+
+        README.md
 
 
 Pipeline Overview
@@ -82,9 +84,6 @@ Create your config file:
 
 Edit config.yaml to match your environment.
 
-IMPORTANT:
-- config.yaml contains absolute paths and must NOT be committed to git
-- Only config.example.yaml should be tracked
 
 
 Running the Pipeline
