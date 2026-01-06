@@ -16,37 +16,35 @@ Directory Structure
 -------------------
 
 .
-├── configs/
-│   ├── config.example.yaml      # Example configuration (commit to git)
-│   └── config.yaml              # User-specific config (DO NOT COMMIT)
-│
-├── docs/
-│   └── (future documentation, figures, notes)
-│
-├── environment.yml              # Conda environment specification
-│
-├── main/
-│   ├── run_atac_SLURM.sh         # SLURM submission script
-│   └── sample.example.txt        # Example sample list
-│
-├── r/
-│   └── ATACseqQC_for_pipeline.r  # ATACseqQC R script
-│
-├── src/
-│   ├── main_ATAC.py              # Pipeline entry point
-│   ├── configuration.py          # Config loader (YAML + defaults)
-│   └── steps/
-│       ├── align.py
-│       ├── trimming.py
-│       ├── fastqc.py
-│       ├── coverage.py
-│       ├── macs3.py
-│       ├── qc.py
-│       ├── ATACseqQC.py
-│       ├── multiqc.py
-│       └── helpers.py
-│
-└── README.md
+|-- configs/
+|   |-- config.example.yaml      # Example configuration (commit to git)
+|   `-- config.yaml              # User-specific config (DO NOT COMMIT)
+|
+|-- docs/
+|   `-- (future documentation, figures, notes)
+|
+|-- environment.yml              # Conda environment specification
+|
+|-- main/
+|   |-- run_atac_SLURM.sh        # SLURM submission script
+|   `-- sample.example.txt       # Example sample list
+|
+|-- r/
+|   `-- ATACseqQC_for_pipeline.r # ATACseqQC R script
+|
+`-- src/
+    |-- main_ATAC.py             # Pipeline entry point
+    |-- configuration.py         # Config loader (YAML + defaults)
+    `-- steps/
+        |-- align.py
+        |-- trimming.py
+        |-- fastqc.py
+        |-- coverage.py
+        |-- macs3.py
+        |-- qc.py
+        |-- ATACseqQC.py
+        |-- multiqc.py
+        `-- helpers.py
 
 
 Pipeline Overview
