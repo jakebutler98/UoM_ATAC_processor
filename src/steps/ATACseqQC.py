@@ -31,7 +31,6 @@ def run_ATACseqQC(Configuration):
 
     os.makedirs(out_dir, exist_ok=True)
 
-    # Expected outputs from the cleaned R script
     expected = [
         os.path.join(out_dir, f"{sample}_Frag_sizes.png"),
         os.path.join(out_dir, f"{sample}_shifted.bam"),
@@ -46,16 +45,41 @@ def run_ATACseqQC(Configuration):
     if Configuration.force:
         clean_dir(out_dir)
 
-    r_script = "/mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq/analyses/processing_pipeline/scripts/ATACseqQC_for_pipeline_clean.R"
+    r_script = "/mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq/analyses/master_pipeline/scripts/ATACseqQC_for_pipeline.r"
     conda_activate = "/mnt/jw01-aruk-home01/projects/functional_genomics/common_files/bin/tools/miniforge/24.3.0-0/bin/activate"
     conda_env = "/mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq/env"
+    project_root = "/mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq"
+
+    if not os.path.exists(r_script):
+        raise FileNotFoundError(f"ATACseqQC R script not found: {r_script}")
+    if not os.path.exists(conda_activate):
+        raise FileNotFoundError(f"Conda activate script not found: {conda_activate}")
+    if not os.path.exists(conda_env):
+        raise FileNotFoundError(f"Conda env not found: {conda_env}")
+
+    # Quote arguments safely for bash
+    r_script_q = shlex.quote(r_script)
+    bam_q = shlex.quote(bam_file)
+    sample_q = shlex.quote(sample)
+    outdir_q = shlex.quote(out_dir)
+    conda_activate_q = shlex.quote(conda_activate)
+    conda_env_q = shlex.quote(conda_env)
 
     cmd = f"""
-    set -euo pipefail
-    source "{conda_activate}" "{conda_env}"
-    Rscript --vanilla "{r_script}" "{bam_file}" "{sample}" "{out_dir}"
+    set -eo pipefail
+    set +u
+    source {conda_activate_q} {conda_env_q}
+    set -u
+
+    cd {shlex.quote(project_root)}
+
+    export ATAC_R_SCRIPT={r_script_q}
+
+    Rscript --vanilla -e 'source("renv/activate.R"); source(Sys.getenv("ATAC_R_SCRIPT"))' {bam_q} {sample_q} {outdir_q}
     """
 
     logging.info(f"ATACseqQC: running for sample={sample}")
+    logging.info(f"ATACseqQC: BAM={bam_file}")
+    logging.info(f"ATACseqQC: OUTDIR={out_dir}")
     subprocess.run(["bash", "-c", cmd], check=True)
     logging.info("ATACseqQC: finished")

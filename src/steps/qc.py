@@ -43,11 +43,31 @@ def _read_idxstats(idxstats_path: str):
     """
     samtools idxstats columns:
     rname, length, mapped, unmapped
+    Returns a list of dicts (or None if missing/empty).
     """
-    if not os.path.exists(idxstats_path):
+    if not os.path.exists(idxstats_path) or os.path.getsize(idxstats_path) == 0:
         return None
-    df = pd.read_csv(idxstats_path, sep="\t", header=None, names=["rname", "length", "mapped", "unmapped"])
-    return df
+
+    rows = []
+    with open(idxstats_path) as f:
+        for line in f:
+            line = line.rstrip("\n")
+            if not line:
+                continue
+            parts = line.split("\t")
+            if len(parts) < 4:
+                continue
+            rname, length, mapped, unmapped = parts[:4]
+            try:
+                rows.append({
+                    "rname": rname,
+                    "length": int(length),
+                    "mapped": int(mapped),
+                    "unmapped": int(unmapped),
+                })
+            except ValueError:
+                continue
+    return rows
 
 def run_qc(Configuration):
     sample = Configuration.file_to_process
@@ -90,10 +110,10 @@ def run_qc(Configuration):
 
     # Mito fraction from idxstats (produced in dedup_QC_alignments)
     mito_fraction = None
-    idx_df = _read_idxstats(idxstats_path)
-    if idx_df is not None:
-        total_mapped = idx_df["mapped"].sum()
-        mito_mapped = idx_df.loc[idx_df["rname"].isin(["chrM", "MT", "M"]), "mapped"].sum()
+    idx_rows = _read_idxstats(idxstats_path)
+    if idx_rows is not None:
+        total_mapped = sum(r["mapped"] for r in idx_rows)
+        mito_mapped = sum(r["mapped"] for r in idx_rows if r["rname"] in ("chrM", "MT", "M"))
         if total_mapped > 0:
             mito_fraction = mito_mapped / total_mapped
 
