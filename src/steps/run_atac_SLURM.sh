@@ -4,7 +4,7 @@
 #SBATCH -n 1                             # Number of tasks (usually 1 for array jobs)
 #SBATCH -c 8                             # CPUs per task
 #SBATCH -t 6:00:00                            # Time (minutes)
-#SBATCH -a 1-4                          # Array range
+#SBATCH -a 2-4                          # Array range
 #SBATCH -o /mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq/analyses/chondrocytes/data/logs/%x-%A_%a.log
 #SBATCH -e /mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq/analyses/chondrocytes/data/logs/%x-%A_%a.log
 
@@ -39,4 +39,4 @@ SAMPLE=$(awk "NR==$INDEX" samples.txt)
 
 sleep $(($INDEX*20))
 
-python -X faulthandler ./main_ATAC.py -i "${SAMPLE}" --config ./configs/config.yaml --threads "${TOOL_THREADS}" -s ATACseqQC
+python -X faulthandler ./main_ATAC.py -i "${SAMPLE}" --config ./configs/config.yaml --threads "${TOOL_THREADS}" -s fastqc_before_trimming

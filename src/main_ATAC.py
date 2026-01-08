@@ -16,7 +16,7 @@ import os
 import glob
 import argparse
 import logging
-from steps import fastqc, trimming, align, coverage, genrich, macs3, qc, ATACseqQC, multiqc
+from steps import fastqc, trimming, align, coverage, macs3, qc, ATACseqQC, multiqc
 
 
 if __name__=="__main__":
@@ -81,10 +81,6 @@ if __name__=="__main__":
 	
         # run coverage
         coverage.coverage(Configuration)
-        
-        # run genrich
-        genrich.create_bam_for_genrich(Configuration)
-        genrich.run_genrich_ATAC(Configuration)
 
         # run macs3
         macs3.run_macs3_ATAC(Configuration)
@@ -113,9 +109,6 @@ if __name__=="__main__":
             align.filter_alignments(Configuration)
         if "coverage" in args.step:
             coverage.coverage(Configuration)
-        if "genrich" in args.step:
-            genrich.create_bam_for_genrich(Configuration)
-            genrich.run_genrich_ATAC(Configuration)
         if "macs3" in args.step:
             macs3.run_macs3_ATAC(Configuration)
         if "qc" in args.step:

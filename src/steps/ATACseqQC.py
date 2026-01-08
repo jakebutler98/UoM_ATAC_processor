@@ -1,6 +1,7 @@
 import os
 import logging
 import subprocess
+import shlex
 from steps.helpers import outputs_exist, clean_dir
 
 def run_ATACseqQC(Configuration):
