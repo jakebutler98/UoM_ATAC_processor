@@ -1,169 +1,203 @@
-ATAC-seq Processing Pipeline
-============================
+# ATAC-seq Processing Pipeline
 
-This repository contains a modular, reproducible ATAC-seq processing pipeline
-designed for paired-end sequencing data generated using in-house library
-preparation protocols.
+A modular, reproducible ATAC-seq processing pipeline for paired-end sequencing data.
 
-The pipeline is designed for HPC environments (SLURM) and focuses on:
-- Robust alignment and filtering
-- ATAC-specific QC metrics
-- Reproducibility via configuration files
-- Clean separation of code, configuration, and execution logic
+Designed for HPC (SLURM) environments but fully runnable per-sample via Python. 
+All system-specific paths are externalised into a YAML config to ensure portability.
 
+---
 
-## Directory Structure
-
-The repository is organised as follows:
-
-    .
-        configs/
-            config.example.yaml
-            config.yaml
-
-        docs/
-
-        environment.yml
-
-        main/
-            run_atac_SLURM.sh
-            sample.example.txt
-
-        r/
-            ATACseqQC_for_pipeline.r
-
-        src/
-            main_ATAC.py
-            configuration.py
-            steps/
-                align.py
-                trimming.py
-                fastqc.py
-                coverage.py
-                macs3.py
-                qc.py
-                ATACseqQC.py
-                multiqc.py
-                helpers.py
-
-        README.md
-
-
-Pipeline Overview
------------------
+## Overview
 
 For each sample, the pipeline performs:
 
-1. Adapter trimming and QC (fastp)
-2. Alignment to reference genome (bowtie2)
-3. Duplicate removal and alignment QC (Picard + samtools)
-4. Filtering:
-   - MAPQ >= 30
-   - Properly paired reads
-   - Removal of chrM
-   - Optional ENCODE blacklist removal
-5. Coverage track generation (deepTools)
-6. Peak calling (MACS3, BAMPE mode)
-7. ATAC-specific QC:
-   - FRiP (TSS and peaks)
-   - Mitochondrial fraction
-   - Duplicate rate
-   - Fragment length distribution
-8. ATACseqQC (TSS enrichment, shifted BAM)
-9. Aggregated reporting (MultiQC)
+1. FastQC on raw reads  
+2. Adapter trimming and filtering (fastp)  
+3. FastQC on trimmed reads  
+4. Alignment to reference genome (Bowtie2)  
+5. BAM sorting and indexing (samtools)  
+6. Duplicate removal + alignment QC (Picard)  
+7. Read filtering:
+   - remove chrM
+   - MAPQ ≥ 30
+   - properly paired reads only
+   - remove duplicates / secondary / supplementary reads
+   - optional ENCODE blacklist filtering
+8. Coverage track generation (deepTools → BigWig)  
+9. Peak calling (MACS3, BAMPE mode)  
+10. QC metrics:
+    - FRiP (peaks and TSS)
+    - mitochondrial fraction
+    - duplication rate
+    - fragment length distribution  
+11. ATACseqQC:
+    - TSS enrichment
+    - shifted BAM generation  
+12. MultiQC summary report  
 
+---
 
-Configuration
--------------
+## Pipeline Structure
 
-All user-specific paths and options are defined in a YAML configuration file.
+UoM_ATAC_processor/
+├── configs/
+│   └── config.example.yaml
+├── main/
+│   ├── run_atac_SLURM.sh
+│   └── sample.example.txt
+├── r/
+│   └── ATACseqQC_for_pipeline.r
+├── src/
+│   ├── configuration.py
+│   ├── main_ATAC.py
+│   └── steps/
+│       ├── align.py
+│       ├── trimming.py
+│       ├── fastqc.py
+│       ├── coverage.py
+│       ├── macs3.py
+│       ├── qc.py
+│       ├── ATACseqQC.py
+│       ├── multiqc.py
+│       └── helpers.py
+├── environment.yml
+├── README.md
 
-Create your config file:
+---
 
-    cp configs/config.example.yaml configs/config.yaml
+## Input Format
 
-Edit config.yaml to match your environment.
+RAW_input_dir/
+└── SAMPLE_NAME/
+    ├── sample_L001_R1.fastq.gz
+    ├── sample_L001_R2.fastq.gz
+    ├── sample_L002_R1.fastq.gz
+    └── sample_L002_R2.fastq.gz
 
+Multiple lanes are automatically merged. Single-lane samples are handled directly.
 
+---
 
-Running the Pipeline
---------------------
+## Installation
 
-Single sample (example):
+Create environment:
 
-    python src/main_ATAC.py \
-      -i SAMPLE_NAME \
-      --config configs/config.yaml \
-      --threads 8
+conda env create -f environment.yml  
+conda activate UoM_ATAC_processor  
 
-Selective steps:
+---
 
-    python src/main_ATAC.py \
-      -i SAMPLE_NAME \
-      --config configs/config.yaml \
-      -s align -s align_qc -s filter -s macs3
+## Configuration
 
+cp configs/config.example.yaml configs/config.yaml  
 
-SLURM Execution
----------------
+Edit config.yaml:
 
-Use the provided SLURM script:
+Key sections:
 
-    sbatch main/run_atac_SLURM.sh
+paths:
+  RAW_input_dir: "/path/to/raw"
+  cleaned_alignments_dir: "/path/to/clean_bams"
+  macs3_dir: "/path/to/macs3_output"
+  coverages_dir: "/path/to/bigwigs"
+  other_qc_dir: "/path/to/qc"
 
-Samples are read from a text file (one sample per line).
+references:
+  bowtie2_index: "/path/to/index"
+  genome_fasta: "/path/to/genome.fa"
+  picard: "/path/to/picard.jar"
 
+options:
+  threads: 8
+  blacklist_bed: null
 
-Blacklist Filtering
--------------------
+---
 
-Blacklist filtering is enabled automatically if the following is set in
-config.yaml:
+## Running the Pipeline
 
-    options:
-      blacklist_bed: /path/to/hg38-blacklist.v2.bed
+Run full pipeline:
 
-If unset or null, blacklist filtering is skipped.
+python src/main_ATAC.py -i SAMPLE_NAME --config configs/config.yaml --threads 8
 
+Run specific steps:
 
-Conda Environment
------------------
+python src/main_ATAC.py -i SAMPLE_NAME --config configs/config.yaml \
+  -s trimming -s align -s filter -s macs3
 
-Create the environment using:
+Available steps:
 
-    conda env create -f environment.yml
+fastqc_before_trimming  
+trimming  
+fastqc_after_trimming  
+align  
+align_qc  
+filter  
+coverage  
+macs3  
+qc  
+ATACseqQC  
+multiqc  
 
-Activate it before running the pipeline.
+Overwrite outputs:
 
+--force
 
-GitHub Notes
-------------
+---
 
-Recommended .gitignore entries:
+## SLURM Execution
 
-- configs/config.yaml
-- __pycache__/
-- *.log
-- *.bam
-- *.bai
-- *.bw
-- output directories
+Edit:
 
-This repository is intended to be portable across systems by modifying only
-config.yaml.
+main/run_atac_SLURM.sh
 
+Submit:
 
-Status
-------
+sbatch main/run_atac_SLURM.sh
 
-The pipeline has been tested end-to-end on representative ATAC-seq samples
-and is considered production-ready.
+Sample file format:
 
+SAMPLE_1  
+SAMPLE_2  
+SAMPLE_3  
 
-Author
-------
+---
 
-Developed by:
-[Your Name]
+## Output Structure
 
-Maintained for internal and collaborative ATAC-seq analyses.
+output/
+├── fastqc/
+├── fastp/
+├── temp_align/
+├── clean_alignments/
+├── coverages/
+├── macs3/
+└── qc/
+    ├── SAMPLE_1/
+    ├── multiqc/
+    └── qc_metrics_all_samples.tsv
+
+---
+
+## Notes
+
+- Do NOT commit config.yaml
+- Designed for paired-end ATAC-seq only
+- Requires standard bioinformatics tools installed or via modules
+
+---
+
+## .gitignore (recommended)
+
+configs/config.yaml  
+output/  
+logs/  
+*.bam  
+*.bai  
+*.bw  
+__pycache__/  
+
+---
+
+## Author
+
+Jake Butler

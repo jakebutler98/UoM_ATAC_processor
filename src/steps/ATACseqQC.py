@@ -46,7 +46,8 @@ def run_ATACseqQC(Configuration):
     if Configuration.force:
         clean_dir(out_dir)
 
-    r_script = "/mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq/analyses/master_pipeline/scripts/ATACseqQC_for_pipeline.r"
+    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+    r_script = os.path.join(repo_root, "r", "ATACseqQC_for_pipeline.r")
     conda_activate = "/mnt/jw01-aruk-home01/projects/functional_genomics/common_files/bin/tools/miniforge/24.3.0-0/bin/activate"
     conda_env = "/mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq/env"
     project_root = "/mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq"

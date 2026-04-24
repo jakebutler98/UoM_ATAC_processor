@@ -13,11 +13,15 @@ paths:
   fastqc_untrimmed_dir: "/mnt/.../output/qc/fastqc_untrimmed"
   fastqc_trimmed_dir: "/mnt/.../output/qc/fastqc_trimmed"
   logs_dir: "/mnt/.../output/logs"
+  macs3_exe: "/mnt/jw01-aruk-home01/projects/oa_functional_genomics/projects/ATAC_seq/env_macs3/bin/macs3"
 
 references:
   bowtie2_index: "/mnt/.../hg38/Bowtie2Index/genome"
   genome_fasta: "/mnt/.../hg38/fasta/genome.fa"
   picard: "/mnt/.../picard.jar"
+  genome_file: "/path/to/genome.chrom.sizes"
+  tss_bed: "/path/to/TSS_sites.bed"
+  picard: "/path/to/picard.jar"
 
 options:
   threads: 8

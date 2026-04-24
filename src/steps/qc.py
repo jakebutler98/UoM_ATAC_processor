@@ -6,9 +6,9 @@ import pandas as pd
 import pybedtools as pbed
 import matplotlib.pyplot as plt
 
-os.makedirs("/mnt/iusers01/jw01/x25633jb/scratch/temp_pybedtools/", exist_ok=True)
-pbed.helpers.set_tempdir("/mnt/iusers01/jw01/x25633jb/scratch/temp_pybedtools/")
-bed_genome_file = "/mnt/jw01-aruk-home01/projects/functional_genomics/common_files/data/external/reference/Homo_sapiens/hg38/Sequence/WholeGenomeFasta/genome.genome"
+pbed.helpers.set_tempdir(Configuration.pybedtools_tmp)
+bed_genome_file = Configuration.genome_file
+tss_sites = Configuration.tss_bed
 
 def _samtools_count(bam_path: str) -> int:
     out = subprocess.check_output(["samtools", "view", "-c", bam_path])

@@ -78,8 +78,7 @@ def run_fastp(Configuration):
         "-j", json_out,
         "-R", sample,
         "-p",
-        "--adapter_sequence=AGATGTGTATAAGAGACAG",
-        "--adapter_sequence_r2=AGATGTGTATAAGAGACAG",
+        "--detect_adapter_for_pe",
         "--trim_poly_g",
         "--trim_poly_x",
         "--length_required=30"
