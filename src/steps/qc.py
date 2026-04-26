@@ -6,10 +6,6 @@ import pandas as pd
 import pybedtools as pbed
 import matplotlib.pyplot as plt
 
-pbed.helpers.set_tempdir(Configuration.pybedtools_tmp)
-bed_genome_file = Configuration.genome_file
-tss_sites = Configuration.tss_bed
-
 def _samtools_count(bam_path: str) -> int:
     out = subprocess.check_output(["samtools", "view", "-c", bam_path])
     return int(out.decode().strip())
@@ -72,6 +68,13 @@ def _read_idxstats(idxstats_path: str):
 def run_qc(Configuration):
     sample = Configuration.file_to_process
 
+    pybedtools_tmp = getattr(Configuration, "pybedtools_tmp", "/tmp/pybedtools")
+    os.makedirs(pybedtools_tmp, exist_ok=True)
+    pbed.helpers.set_tempdir(pybedtools_tmp)
+
+    bed_genome_file = Configuration.genome_file
+    tss_sites = Configuration.tss_bed
+
     # Paths
     filtered_bam = os.path.join(Configuration.cleaned_alignments_dir, sample, f"{sample}_align_dedup_filtered.bam")
     peaks_narrow = os.path.join(Configuration.macs3_dir, sample, f"{sample}_peaks.narrowPeak")
@@ -88,7 +91,6 @@ def run_qc(Configuration):
         raise FileNotFoundError(f"MACS3 peaks not found: {peaks_narrow}")
 
     # TSS for FRiP(TSS)
-    tss_sites = "/mnt/jw01-aruk-home01/projects/psa_functional_genomics/NEW_references/genes/gencode.v29.TSS_sites_protein_coding_sorted.bed"
     tss_bed = pbed.BedTool(tss_sites).slop(b=2000, g=bed_genome_file)
 
     def wccount(filename):

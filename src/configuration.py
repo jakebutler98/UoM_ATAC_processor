@@ -40,12 +40,15 @@ class Config:
         self.bowtie2_index = None
         self.genome_fasta = None
         self.picard = None
+        self.genome_file = None
+        self.tss_bed = None
 
         # Options
         self.force = False
         self.threads = 8
         self.blacklist_bed = None
         self.atacseqqc_dir = None
+        self.pybedtools_tmp = "/tmp/pybedtools"
 
         # Runtime
         self.file_to_process = None
@@ -101,6 +104,8 @@ class Config:
             self.blacklist_bed = _resolve(opts["blacklist_bed"])
         if "atacseqqc_dir" in opts:
             self.atacseqqc_dir = _resolve(opts["atacseqqc_dir"])
+        if "pybedtools_tmp" in opts:
+            self.pybedtools_tmp = _resolve(opts["pybedtools_tmp"])
 
     def _init_logging(self):
         handler = logging.StreamHandler()
