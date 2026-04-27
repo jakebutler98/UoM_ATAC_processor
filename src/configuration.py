@@ -19,7 +19,7 @@ class Config:
 
     def __init__(self, config_path: Optional[str] = None):
         # -------- safe defaults (repo-friendly) --------
-        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "."))
+        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
         # Paths (default to ./data/* so repo can run anywhere)
         self.RAW_input_dir = os.path.join(repo_root, "data", "raw")
@@ -106,6 +106,32 @@ class Config:
             self.atacseqqc_dir = _resolve(opts["atacseqqc_dir"])
         if "pybedtools_tmp" in opts:
             self.pybedtools_tmp = _resolve(opts["pybedtools_tmp"])
+
+    def validate(self):
+        required = {
+            "RAW_input_dir": self.RAW_input_dir,
+            "Trimmed_dir": self.Trimmed_dir,
+            "aligned_dir": self.aligned_dir,
+            "Reads_quality_dir": self.Reads_quality_dir,
+            "dedup_alignments_dir": self.dedup_alignments_dir,
+            "cleaned_alignments_dir": self.cleaned_alignments_dir,
+            "macs3_dir": self.macs3_dir,
+            "coverages_dir": self.coverages_dir,
+            "other_qc_dir": self.other_qc_dir,
+            "bowtie2_index": self.bowtie2_index,
+            "genome_fasta": self.genome_fasta,
+            "picard": self.picard,
+        }
+
+        missing = [k for k, v in required.items() if v in [None, ""]]
+
+        if missing:
+            raise ValueError(
+                "Missing required config values: "
+                + ", ".join(missing)
+                + ". Check that --config points to a valid configs/config.yaml "
+                + "and that paths/references are filled in."
+            )
 
     def _init_logging(self):
         handler = logging.StreamHandler()

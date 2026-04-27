@@ -36,6 +36,7 @@ if __name__=="__main__":
 
     # set up configuration object for all steps
     Configuration = Config(config_path=args.config)
+    Configuration.validate()
     Configuration.force = bool(args.force)
     Configuration.analysis_type = "ATAC"
 
